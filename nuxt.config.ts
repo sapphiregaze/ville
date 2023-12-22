@@ -7,17 +7,11 @@ export default defineNuxtConfig({
   alias: {
     "@": resolve(__dirname, "/"),
   },
-  css: ["~/assets/css/main.css"],
+  css: ["~/assets/main.scss"],
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
-  components: [
-    {
-      path: "~/components",
-      pathPrefix: false,
-    },
-  ],
 });
