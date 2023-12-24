@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxt/http": "^0.6.4",
     "autoprefixer": "^10.4.16",
     "nuxt": "^3.8.2",
     "nuxt-icon": "^0.6.7",
