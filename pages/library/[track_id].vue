@@ -1,11 +1,9 @@
-<script setup>
-const route = useRoute();
-const nuxt = useNuxtApp();
-
-console.log(route);
-console.log(nuxt);
-</script>
-
 <template>
-  <div>Track ID: {{ $route.params.track_id }}</div>
+  <div class="flex justify-center p-20">
+    <div>Track ID: {{ $route.params.track_id }}</div>
+  </div>
 </template>
+
+<script setup lang="ts">
+const route: route = useRoute();
+</script>

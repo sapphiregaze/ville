@@ -1,8 +1,10 @@
 <template>
-  <div class="flex h-screen w-screen bg-cyan-950 text-3xl text-gray-300">
+  <div
+    class="min-w-screen flex min-h-screen overflow-hidden bg-cyan-950 font-mono"
+  >
     <NuxtLayout>
       <SideBar />
-      <NuxtPage />
+      <NuxtPage class="ml-24" />
     </NuxtLayout>
   </div>
 </template>

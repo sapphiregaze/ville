@@ -1,22 +1,7 @@
-<script>
-export default {
-  data() {
-    return {
-      sidebarCollapsed: true,
-    };
-  },
-  methods: {
-    toggleSidebar() {
-      this.sidebarCollapsed = !this.sidebarCollapsed;
-    },
-  },
-};
-</script>
-
 <template>
-  <div
+  <aside
     :class="[
-      'sticky',
+      'fixed',
       'h-full',
       { 'w-20': sidebarCollapsed, 'w-72': !sidebarCollapsed },
       'bg-[#11101d]',
@@ -48,7 +33,7 @@ export default {
         <div class="-ml-4 mt-12 text-xl">
           <NuxtLink to="/">
             <div
-              class="rounded-xl p-2 hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+              class="m-2 rounded-xl p-2 shadow-lg hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
             >
               <Icon name="humbleicons:home" color="#059669" size="24" />
               Home
@@ -56,7 +41,7 @@ export default {
           </NuxtLink>
           <NuxtLink to="/library">
             <div
-              class="rounded-xl p-2 hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+              class="m-2 rounded-xl p-2 shadow-lg hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
             >
               <Icon name="humbleicons:music-note" color="#059669" size="24" />
               Library
@@ -64,7 +49,7 @@ export default {
           </NuxtLink>
           <NuxtLink to="/upload">
             <div
-              class="rounded-xl p-2 hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+              class="m-2 rounded-xl p-2 shadow-lg hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
             >
               <Icon name="humbleicons:upload" color="#059669" size="24" />
               Upload
@@ -72,7 +57,7 @@ export default {
           </NuxtLink>
           <NuxtLink to="/settings">
             <div
-              class="mt-72 rounded-xl p-2 hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+              class="mt-72 rounded-xl p-2 shadow-lg hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
             >
               <Icon name="healthicons:ui-settings" color="#059669" size="24" />
               Settings
@@ -118,5 +103,20 @@ export default {
         </div>
       </div>
     </div>
-  </div>
+  </aside>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      sidebarCollapsed: true,
+    };
+  },
+  methods: {
+    toggleSidebar() {
+      this.sidebarCollapsed = !this.sidebarCollapsed;
+    },
+  },
+};
+</script>
