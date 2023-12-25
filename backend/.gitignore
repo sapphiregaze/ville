@@ -18,3 +18,4 @@ logs
 build
 
 *.db
+uploads
