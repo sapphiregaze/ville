@@ -9,7 +9,8 @@ async function createTableIfNotExist(db: Database, name: string) {
         CREATE TABLE IF NOT EXISTS ${name} (
           id INTEGER PRIMARY KEY,
           title TEXT,
-          duration INTEGER
+          duration INTEGER,
+          path TEXT
         )
       `;
 
@@ -17,7 +18,6 @@ async function createTableIfNotExist(db: Database, name: string) {
       if (err) {
         reject(err);
       }
-      console.log(`Table ${name} created or already exists`);
       resolve();
     });
   });
@@ -35,25 +35,27 @@ async function addTrackRecords(record: any) {
         } else {
           await createTableIfNotExist(db, "tracks");
 
-          console.log(
-            "Connected to ville database to inserting track records.",
-          );
-
           const query: string = `
-            INSERT INTO tracks (title, duration)
-            VALUES (?, ?);
+            INSERT INTO tracks (title, duration, path)
+            VALUES (?, ?, ?);
           `;
 
-          db.run(query, [record.title, record.duration], function (err: Error) {
-            if (err) {
-              console.error(err.message);
-              reject(err);
-            } else {
-              console.log(`${record.title} inserted into tracks successfully`);
-              resolve();
-              db.close();
-            }
-          });
+          db.run(
+            query,
+            [record.title, record.duration, record.path],
+            function (err: Error) {
+              if (err) {
+                console.error(err.message);
+                reject(err);
+              } else {
+                console.log(
+                  `${record.title} inserted into tracks successfully`,
+                );
+                resolve();
+                db.close();
+              }
+            },
+          );
         }
       },
     );
@@ -73,10 +75,6 @@ async function getTrackRecords() {
           reject(err);
         } else {
           await createTableIfNotExist(db, "tracks");
-
-          console.log(
-            "Connected to ville database for fetching track records.",
-          );
 
           const query: string = `SELECT * FROM tracks`;
 

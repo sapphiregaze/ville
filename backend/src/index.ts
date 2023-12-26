@@ -69,6 +69,7 @@ app.post(
       const track = {
         title: path.parse(req.file.originalname).name,
         duration: format.duration || -1,
+        path: req.file.path,
       };
       track.duration = Math.floor(track.duration);
 
