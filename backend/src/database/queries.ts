@@ -1,9 +1,11 @@
+import { Database } from "sqlite3";
+
 const sqlite3 = require("sqlite3").verbose();
 
 // create tables if it doesnt exist
-async function createTableIfNotExist(db: any, name: string) {
+async function createTableIfNotExist(db: Database, name: string) {
   return new Promise<void>((resolve, reject) => {
-    const query = `
+    const query: string = `
         CREATE TABLE IF NOT EXISTS ${name} (
           id INTEGER PRIMARY KEY,
           title TEXT,
@@ -24,32 +26,37 @@ async function createTableIfNotExist(db: any, name: string) {
 // add track records to tracks tables
 async function addTrackRecords(record: any) {
   return new Promise<void>((resolve, reject) => {
-    let db: any = new sqlite3.Database("./ville.db", async (err: Error) => {
-      if (err) {
-        console.error(err.message);
-        reject(err);
-      } else {
-        await createTableIfNotExist(db, "tracks");
+    let db: Database = new sqlite3.Database(
+      "./ville.db",
+      async (err: Error) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          await createTableIfNotExist(db, "tracks");
 
-        console.log("Connected to ville database to inserting track records.");
+          console.log(
+            "Connected to ville database to inserting track records.",
+          );
 
-        const query = `
+          const query: string = `
             INSERT INTO tracks (title, duration)
-            VALUES ('${record.title}', ${record.duration});
+            VALUES (?, ?);
           `;
 
-        db.run(query, function (err: Error) {
-          if (err) {
-            console.error(err.message);
-            reject(err);
-          }
-          console.log(`${record.title} inserted into tracks successfully`);
-          resolve();
-        });
-
-        db.close();
-      }
-    });
+          db.run(query, [record.title, record.duration], function (err: Error) {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+            } else {
+              console.log(`${record.title} inserted into tracks successfully`);
+              resolve();
+              db.close();
+            }
+          });
+        }
+      },
+    );
   });
 }
 
@@ -57,7 +64,7 @@ async function addTrackRecords(record: any) {
 async function getTrackRecords() {
   return new Promise((resolve, reject) => {
     let tracks: any = [];
-    let db: any = new sqlite3.Database(
+    let db: Database = new sqlite3.Database(
       "./ville.db",
       sqlite3.OPEN_READONLY,
       async (err: Error) => {
@@ -71,7 +78,7 @@ async function getTrackRecords() {
             "Connected to ville database for fetching track records.",
           );
 
-          const query = `SELECT * FROM tracks`;
+          const query: string = `SELECT * FROM tracks`;
 
           db.each(
             query,
@@ -87,6 +94,7 @@ async function getTrackRecords() {
                 reject(err);
               }
               resolve(tracks);
+              db.close();
             },
           );
         }
@@ -95,4 +103,34 @@ async function getTrackRecords() {
   });
 }
 
-export { addTrackRecords, getTrackRecords };
+// get number of tracks in the tracks table
+async function getNumberOfTracks() {
+  return new Promise<number>((resolve, reject) => {
+    let db: Database = new sqlite3.Database(
+      "./ville.db",
+      async (err: Error) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          await createTableIfNotExist(db, "tracks");
+
+          const query: string = `SELECT COUNT(id) as count FROM tracks`;
+
+          db.get(query, function (err: Error, row: any) {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+            } else {
+              const count: number = row ? row.count : 0;
+              resolve(count);
+              db.close();
+            }
+          });
+        }
+      },
+    );
+  });
+}
+
+export { addTrackRecords, getTrackRecords, getNumberOfTracks };
