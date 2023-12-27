@@ -7,6 +7,7 @@
       'bg-[#11101d]',
       'outline',
       'outline-[#131516]',
+      'z-50',
     ]"
   >
     <button

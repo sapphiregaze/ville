@@ -1,6 +1,6 @@
 <template>
   <div
-    class="align-center flex flex-col bg-gradient-to-br from-emerald-600 to-teal-200 bg-clip-text px-64 py-8 text-transparent"
+    class="align-center mb-56 flex flex-col bg-gradient-to-br from-emerald-600 to-teal-200 bg-clip-text px-64 py-8 text-transparent"
   >
     <div class="ml-4 pb-4 pt-8 text-5xl font-extrabold">Library</div>
     <div class="flex p-2 text-2xl font-extrabold">
@@ -23,7 +23,11 @@
       <div class="flex">
         <button
           v-if="play && selectedId === track.id"
-          @click="setPlayId(track.id)"
+          @click="
+            setAudioId(track.id);
+            setAudioName(track.title);
+            setAudioDuration(track.duration);
+          "
         >
           <Icon
             name="material-symbols:play-arrow-rounded"
@@ -40,7 +44,7 @@
         <div class="w-24 text-right">{{ track.duration }}</div>
       </div>
     </div>
-    <AudioPlayer :id="playId" />
+    <AudioPlayer :id="audioId" :name="audioName" :duration="audioDuration" />
   </div>
 </template>
 
@@ -50,7 +54,9 @@ export default {
     return {
       selectedId: null,
       play: false,
-      playId: "1",
+      audioId: "1",
+      audioName: "",
+      audioDuration: "0:00",
     };
   },
   methods: {
@@ -60,8 +66,14 @@ export default {
     togglePlay(state) {
       this.play = state;
     },
-    setPlayId(id) {
-      this.playId = String(id);
+    setAudioId(id) {
+      this.audioId = String(id);
+    },
+    setAudioName(name) {
+      this.audioName = name;
+    },
+    setAudioDuration(duration) {
+      this.audioDuration = duration;
     },
   },
 };
