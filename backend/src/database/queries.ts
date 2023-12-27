@@ -131,4 +131,35 @@ async function getNumberOfTracks() {
   });
 }
 
-export { addTrackRecords, getTrackRecords, getNumberOfTracks };
+// get number of tracks in the tracks table
+async function getPathOfFile(id: number) {
+  return new Promise<string>((resolve, reject) => {
+    let db: Database = new sqlite3.Database(
+      "./ville.db",
+      async (err: Error) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          await createTableIfNotExist(db, "tracks");
+
+          const query: string = `SELECT path FROM tracks
+            WHERE id = (?)`;
+
+          db.get(query, [id], function (err: Error, row: any) {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+            } else {
+              const path: string = row ? row.path : "";
+              resolve(path);
+              db.close();
+            }
+          });
+        }
+      },
+    );
+  });
+}
+
+export { addTrackRecords, getTrackRecords, getNumberOfTracks, getPathOfFile };

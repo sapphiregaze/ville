@@ -14,15 +14,58 @@
       />
     </div>
     <div
+      @mouseover="togglePlay(true), setCurrentId(track.id)"
+      @mouseout="togglePlay(false), setCurrentId(null)"
       v-for="track in tracks"
-      class="flex rounded-lg p-2 hover:bg-black hover:text-white"
+      :key="track.id"
+      class="flex rounded-lg p-2 hover:bg-[#11101d] hover:text-slate-300"
     >
-      <div class="w-20 pr-12 text-right">{{ track.id }}</div>
-      <div class="w-96 pr-32 text-left">{{ track.title }}</div>
-      <div class="w-24 text-right">{{ track.duration }}</div>
+      <div class="flex">
+        <button
+          v-if="play && selectedId === track.id"
+          @click="setPlayId(track.id)"
+        >
+          <Icon
+            name="material-symbols:play-arrow-rounded"
+            color="#059669"
+            size="24"
+            class="ml-2 w-20 pr-12 text-right hover:animate-pulse"
+          />
+        </button>
+
+        <div v-else class="w-20 pr-12 text-right">
+          {{ track.id }}
+        </div>
+        <div class="w-96 pr-32 text-left">{{ track.title }}</div>
+        <div class="w-24 text-right">{{ track.duration }}</div>
+      </div>
     </div>
+    <AudioPlayer :id="playId" />
   </div>
 </template>
+
+<script lang="ts">
+export default {
+  data() {
+    return {
+      selectedId: null,
+      play: false,
+      playId: "1",
+    };
+  },
+  methods: {
+    setCurrentId(id) {
+      this.selectedId = id;
+    },
+    togglePlay(state) {
+      this.play = state;
+    },
+    setPlayId(id) {
+      this.playId = String(id);
+    },
+  },
+};
+</script>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
