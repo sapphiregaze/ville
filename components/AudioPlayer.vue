@@ -40,7 +40,9 @@
             <div
               class="flex items-center justify-between bg-gradient-to-br from-emerald-800 to-teal-200 bg-clip-text px-56 pb-2 text-transparent"
             >
-              <div class="text-xl font-extrabold">
+              <div
+                class="text-xl font-extrabold hover:font-extrabold hover:text-emerald-500"
+              >
                 <button @click="setSpeed(1)">1x</button>
               </div>
               <Icon
@@ -49,7 +51,9 @@
                 size="46"
                 class="hover:animate-pulse"
               />
-              <div class="bg-red-light rounded-full p-4 shadow-lg">
+              <div
+                class="rounded-full p-4 shadow-lg hover:animate-pulse hover:shadow-2xl"
+              >
                 <button
                   @click="
                     playOrPause();
@@ -61,14 +65,12 @@
                     name="material-symbols:play-arrow-rounded"
                     color="#059669"
                     size="46"
-                    class="hover:animate-pulse"
                   />
                   <Icon
                     v-else
                     name="material-symbols:pause-rounded"
                     color="#059669"
                     size="46"
-                    class="hover:animate-pulse"
                   />
                 </button>
               </div>
@@ -78,7 +80,9 @@
                 size="46"
                 class="hover:animate-pulse"
               />
-              <div class="text-xl font-extrabold">
+              <div
+                class="text-xl font-normal hover:font-extrabold hover:text-emerald-500"
+              >
                 <button @click="setSpeed(2)">2x</button>
               </div>
             </div>
