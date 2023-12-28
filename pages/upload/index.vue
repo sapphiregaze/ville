@@ -76,10 +76,9 @@ export default {
       this.hidden = state;
     },
     async upload() {
-      const dropzoneComponent = this.$refs.dropzone;
-      const fileInput = dropzoneComponent.$refs.fileInput;
-
       const formData = new FormData();
+      const fileInput = this.$refs.dropzone.$refs.fileInput;
+
       formData.append("audio", fileInput.files[0]);
 
       try {

@@ -52,12 +52,32 @@
 export default {
   data() {
     return {
+      tracks: [],
       selectedId: null,
       play: false,
       audioId: "1",
       audioName: "",
       audioDuration: "0:00",
     };
+  },
+  mounted() {
+    fetch("/api/tracks/")
+      .then((response) => response.json())
+      .then((tracks) => {
+        tracks.forEach((track) => {
+          const seconds =
+            track.duration % 60 >= 10
+              ? String(track.duration % 60)
+              : "0" + String(track.duration % 60);
+          const minutes = String(Math.floor(track.duration / 60));
+          track.duration = minutes + ":" + seconds;
+        });
+
+        this.tracks = tracks;
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   },
   methods: {
     setCurrentId(id) {
@@ -77,37 +97,4 @@ export default {
     },
   },
 };
-</script>
-
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-
-const tracks: ref = ref([]);
-console.log(process.env.BACKEND_HOST);
-
-onMounted(async () => {
-  await fetchTracks();
-});
-
-async function fetchTracks() {
-  try {
-    const response: any = await fetch(`http://localhost:8080/api/tracks/`);
-    const data: json = await response.json();
-    parseDuration(data);
-    tracks.value = data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-}
-
-function parseDuration(data) {
-  data.forEach((data) => {
-    const seconds: String =
-      data.duration % 60 >= 10
-        ? String(data.duration % 60)
-        : "0" + String(data.duration % 60);
-    const minutes: String = String(Math.floor(data.duration / 60));
-    data.duration = minutes + ":" + seconds;
-  });
-}
 </script>
