@@ -83,7 +83,7 @@ export default {
 
       try {
         const response = await fetch(
-          "http://localhost:8080/api/tracks/upload/",
+          `${this.$config.public.host}/api/tracks/upload/`,
           {
             method: "POST",
             body: formData,

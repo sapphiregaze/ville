@@ -22,4 +22,9 @@ export default defineNuxtConfig({
     },
   },
   modules: ["nuxt-icon"],
+  runtimeConfig: {
+    public: {
+      host: process.env.BACKEND_HOST,
+    },
+  },
 });

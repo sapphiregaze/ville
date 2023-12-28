@@ -102,7 +102,7 @@ export default {
   },
   data() {
     return {
-      audioSrc: `http://localhost:8080/api/audio/${this.id}`,
+      audioSrc: `${this.$config.public.host}/api/audio/${this.id}`,
       audioName: this.name,
       audioDuration: "0:00",
       playing: false,
@@ -148,7 +148,7 @@ export default {
   },
   watch: {
     id: function (newId) {
-      this.audioSrc = `http://localhost:8080/api/audio/${newId}`;
+      this.audioSrc = `${this.$config.public.host}/api/audio/${newId}`;
     },
     name: function (newName) {
       this.audioName = newName;

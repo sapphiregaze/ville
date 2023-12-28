@@ -61,7 +61,7 @@ export default {
     };
   },
   mounted() {
-    fetch("/api/tracks/")
+    fetch(`${this.$config.public.host}/api/tracks/`)
       .then((response) => response.json())
       .then((tracks) => {
         tracks.forEach((track) => {

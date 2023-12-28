@@ -15,7 +15,8 @@
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "prettier": "^3.1.1",
-    "prettier-plugin-tailwindcss": "^0.5.9"
+    "prettier-plugin-tailwindcss": "^0.5.9",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "nuxt": "^3.8.2",
