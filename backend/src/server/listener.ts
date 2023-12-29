@@ -3,12 +3,15 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 import mime from "mime-types";
+import ytdl from "ytdl-core";
+import ffmpeg from "fluent-ffmpeg";
 import * as mm from "music-metadata";
 
 import {
   addTrackRecords,
-  getPathOfFile,
   getTrackRecords,
+  getNumberOfTracks,
+  getPathOfFile,
 } from "../database/queries";
 
 import { upload } from "../database/upload";
@@ -17,12 +20,13 @@ export function startListener(port: number) {
   // create express app and enable cross-origin resource sharing
   const app: express.Express = express();
   app.use(cors());
+  app.use(express.json());
 
   // get request for obtaining list of tracks from database
   app.get("/api/tracks", async (req: Request, res: any) => {
     try {
       const tracks: any = await getTrackRecords();
-      res.send(tracks);
+      res.status(200).send(tracks);
     } catch (error) {
       console.error("Error fetching tracks:", error);
       res.status(500).send({ error: "Internal Server Error" });
@@ -51,7 +55,7 @@ export function startListener(port: number) {
             partial_start.length > 1) ||
           (isNaN(partial_end as unknown as number) && partial_end.length > 1)
         ) {
-          return res.sendStatus(500);
+          return res.status(500).send({ error: "Internal Server Error" });
         }
 
         const start: number = parseInt(partial_start, 10);
@@ -81,6 +85,53 @@ export function startListener(port: number) {
     }
   });
 
+  // post request for downloading youtube audios and storing in database
+  app.post("/api/tracks/uploadUrl", async function (req: any, res: any) {
+    try {
+      const url = req.body.url;
+
+      const uploadPath: string = "src/database/uploads/";
+      fs.mkdirSync(uploadPath, { recursive: true });
+
+      // validate user input url
+      if (!url || !ytdl.validateURL(url)) {
+        return res.status(400).send("Invalid YouTube URL");
+      }
+
+      const numberOfTracks: number = await getNumberOfTracks();
+
+      // get youtube stream with ytdl-core and convert to mp3 using ffmpeg
+      const stream: any = ytdl(url, { quality: "highestaudio" });
+      ffmpeg(stream)
+        .audioBitrate(128)
+        .save(uploadPath + `${numberOfTracks + 1}.mp3`)
+        .on("end", async () => {
+          const info = await ytdl.getInfo(url);
+          const filePath: string = uploadPath + `${numberOfTracks + 1}.mp3`;
+
+          const { format } = await mm.parseFile(filePath, {
+            duration: true,
+          });
+
+          const track = {
+            title: info.videoDetails.title,
+            duration: format.duration || -1,
+            path: filePath,
+          };
+          track.duration = Math.floor(track.duration);
+
+          await addTrackRecords(track);
+
+          console.log("Audio file finished uploading.");
+        });
+
+      res.status(200).send({ success: "File uploaded successfully!" });
+    } catch (error) {
+      console.error("Error downloading file with given URL:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  });
+
   // post request for audio file uploading and adding file record to database
   app.post(
     "/api/tracks/upload",
@@ -106,7 +157,7 @@ export function startListener(port: number) {
           "to",
           req.file.path,
         );
-        res.send("File uploaded successfully!");
+        res.status(200).send({ success: "File uploaded successfully!" });
       } catch (error) {
         console.error("Error uploading file:", error);
         res.status(500).send({ error: "Internal Server Error" });

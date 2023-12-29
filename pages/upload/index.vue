@@ -49,17 +49,46 @@
         <span v-else class="block text-slate-300">Failed to upload file.</span>
       </div>
     </div>
-    <form @submit.prevent="upload" class="flex min-w-96 flex-col">
-      <Dropzone ref="dropzone" />
-      <button
-        @click="setHidden(false)"
-        type="submit"
-        class="m-2 rounded-xl bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text p-2 text-transparent hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+    <div class="flex h-full divide-x-4 divide-dashed divide-teal-400">
+      <form
+        @submit.prevent="uploadUrl"
+        class="flex min-w-96 flex-col justify-center"
       >
-        <Icon name="humbleicons:upload" color="#059669" size="24" />
-        Upload
-      </button>
-    </form>
+        <div
+          class="focus mx-8 rounded-full from-emerald-700 via-green-400 to-teal-200 p-1 focus-within:bg-gradient-to-r hover:bg-gradient-to-r"
+        >
+          <input
+            v-model="youtubeUrl"
+            class="w-full rounded-full border border-green-400 p-3 hover:border-transparent focus:border-transparent focus:outline-none"
+            type="text"
+            id="youtube"
+            placeholder="Enter YouTube URL"
+          />
+        </div>
+        <button
+          @click="setHidden(false)"
+          type="submit"
+          class="mx-8 my-4 rounded-xl bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text p-2 text-transparent hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+        >
+          <Icon name="humbleicons:upload" color="#059669" size="24" />
+          Upload
+        </button>
+      </form>
+      <form
+        @submit.prevent="upload"
+        class="flex min-w-96 flex-col justify-center"
+      >
+        <Dropzone ref="dropzone" class="mx-8" />
+        <button
+          @click="setHidden(false)"
+          type="submit"
+          class="mx-8 my-4 w-full rounded-xl bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text p-2 text-transparent hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+        >
+          <Icon name="humbleicons:upload" color="#059669" size="24" />
+          Upload
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -67,6 +96,7 @@
 export default {
   data() {
     return {
+      youtubeUrl: "",
       uploadStatus: null,
       hidden: true,
     };
@@ -87,6 +117,33 @@ export default {
           {
             method: "POST",
             body: formData,
+          },
+        );
+
+        if (response.ok) {
+          console.log("File uploaded successfully");
+          this.uploadStatus = true;
+        } else {
+          console.error("Error uploading file: ", error);
+          this.uploadStatus = false;
+        }
+      } catch (error) {
+        console.error("Network connection error: ", error);
+        this.uploadStatus = false;
+      }
+    },
+    async uploadUrl() {
+      const url = this.youtubeUrl;
+
+      try {
+        const response = await fetch(
+          `${this.$config.public.host}/api/tracks/uploadUrl/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url }),
           },
         );
 

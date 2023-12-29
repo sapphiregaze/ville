@@ -20,7 +20,7 @@ const filter: any = (
 const storage: multer.StorageEngine = multer.diskStorage({
   destination: function (req: any, file: any, cb: any) {
     // recursively create upload path if path doesn't exist
-    const uploadPath: string = "./src/database/uploads";
+    const uploadPath: string = "src/database/uploads";
     fs.mkdirSync(uploadPath, { recursive: true });
 
     cb(null, uploadPath);
