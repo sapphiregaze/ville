@@ -4,7 +4,7 @@
   >
     <NuxtLayout>
       <SideBar />
-      <NuxtPage class="ml-24" />
+      <NuxtPage class="ml-20" />
     </NuxtLayout>
   </div>
 </template>

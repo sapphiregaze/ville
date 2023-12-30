@@ -49,11 +49,16 @@
         <span v-else class="block text-slate-300">Failed to upload file.</span>
       </div>
     </div>
-    <div class="flex h-full divide-x-4 divide-dashed divide-teal-400">
+    <div
+      class="flex h-full w-full flex-col divide-y-4 divide-dashed divide-teal-400"
+    >
       <form
         @submit.prevent="uploadUrl"
         class="flex min-w-96 flex-col justify-center"
       >
+        <div class="px-20 py-6 text-center text-2xl text-emerald-400">
+          Upload via YouTube URL:
+        </div>
         <div
           class="focus mx-8 rounded-full from-emerald-700 via-green-400 to-teal-200 p-1 focus-within:bg-gradient-to-r hover:bg-gradient-to-r"
         >
@@ -65,28 +70,35 @@
             placeholder="Enter YouTube URL"
           />
         </div>
-        <button
-          @click="setHidden(false)"
-          type="submit"
-          class="mx-8 my-4 rounded-xl bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text p-2 text-transparent hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
-        >
-          <Icon name="humbleicons:upload" color="#059669" size="24" />
-          Upload
-        </button>
+        <div class="flex w-full items-center justify-center">
+          <button
+            @click="setHidden(false)"
+            type="submit"
+            class="mx-8 my-4 rounded-xl bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text px-6 py-2 text-transparent hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+          >
+            <Icon name="humbleicons:upload" color="#059669" size="24" />
+            Upload
+          </button>
+        </div>
       </form>
       <form
         @submit.prevent="upload"
-        class="flex min-w-96 flex-col justify-center"
+        class="flex min-w-96 flex-col justify-center p-4"
       >
-        <Dropzone ref="dropzone" class="mx-8" />
-        <button
-          @click="setHidden(false)"
-          type="submit"
-          class="mx-8 my-4 w-full rounded-xl bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text p-2 text-transparent hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
-        >
-          <Icon name="humbleicons:upload" color="#059669" size="24" />
-          Upload
-        </button>
+        <div class="px-12 py-6 text-center text-2xl text-emerald-400">
+          Upload via audio files:
+        </div>
+        <Dropzone ref="dropzone" />
+        <div class="flex w-full items-center justify-center">
+          <button
+            @click="setHidden(false)"
+            type="submit"
+            class="mx-8 my-4 rounded-xl bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text px-6 py-2 text-transparent hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+          >
+            <Icon name="humbleicons:upload" color="#059669" size="24" />
+            Upload
+          </button>
+        </div>
       </form>
     </div>
   </div>
