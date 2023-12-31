@@ -14,20 +14,16 @@
       />
     </div>
     <div
-      @mouseover="togglePlay(true), setCurrentId(track.id)"
-      @mouseout="togglePlay(false), setCurrentId(null)"
+      @mouseover="togglePlaying(true), setCurrentId(track.id)"
+      @mouseout="togglePlaying(false), setCurrentId(null)"
       v-for="track in tracks"
       :key="track.id"
       class="flex rounded-lg p-2 hover:bg-[#11101d] hover:text-slate-300"
     >
       <div class="flex">
         <button
-          v-if="play && selectedId === track.id"
-          @click="
-            setAudioId(track.id);
-            setAudioName(track.title);
-            setAudioDuration(track.duration);
-          "
+          v-if="playing && selectedId === track.id"
+          @click="setAudioId(track.id)"
         >
           <Icon
             name="material-symbols:play-arrow-rounded"
@@ -44,12 +40,7 @@
         <div class="w-24 text-right">{{ track.duration }}</div>
       </div>
     </div>
-    <AudioPlayer
-      :tracks="tracks"
-      :id="audioId"
-      :name="audioName"
-      :duration="audioDuration"
-    />
+    <AudioPlayer :tracks="tracks" :id="audioId" />
   </div>
 </template>
 
@@ -59,10 +50,8 @@ export default {
     return {
       tracks: [],
       selectedId: null,
-      play: false,
-      audioId: 1,
-      audioName: "",
-      audioDuration: "0:00",
+      playing: false,
+      audioId: 0,
     };
   },
   mounted() {
@@ -88,17 +77,11 @@ export default {
     setCurrentId(id) {
       this.selectedId = id;
     },
-    togglePlay(state) {
-      this.play = state;
+    togglePlaying(state) {
+      this.playing = state;
     },
     setAudioId(id) {
       this.audioId = id;
-    },
-    setAudioName(name) {
-      this.audioName = name;
-    },
-    setAudioDuration(duration) {
-      this.audioDuration = duration;
     },
   },
 };
