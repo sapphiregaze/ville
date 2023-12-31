@@ -44,7 +44,12 @@
         <div class="w-24 text-right">{{ track.duration }}</div>
       </div>
     </div>
-    <AudioPlayer :id="audioId" :name="audioName" :duration="audioDuration" />
+    <AudioPlayer
+      :tracks="tracks"
+      :id="audioId"
+      :name="audioName"
+      :duration="audioDuration"
+    />
   </div>
 </template>
 
@@ -55,7 +60,7 @@ export default {
       tracks: [],
       selectedId: null,
       play: false,
-      audioId: "1",
+      audioId: 1,
       audioName: "",
       audioDuration: "0:00",
     };
@@ -87,7 +92,7 @@ export default {
       this.play = state;
     },
     setAudioId(id) {
-      this.audioId = String(id);
+      this.audioId = id;
     },
     setAudioName(name) {
       this.audioName = name;
