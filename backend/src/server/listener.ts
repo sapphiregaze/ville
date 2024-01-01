@@ -6,8 +6,10 @@ import mime from "mime-types";
 import ytdl from "ytdl-core";
 import ffmpeg from "fluent-ffmpeg";
 import * as mm from "music-metadata";
+import session from "express-session";
 
 import {
+  createTablesIfNotExist,
   addTrackRecords,
   getTrackRecords,
   getNumberOfTracks,
@@ -16,11 +18,20 @@ import {
 
 import { upload } from "../database/upload";
 
-export function startListener(port: number) {
-  // create express app and enable cross-origin resource sharing
+export async function startListener(port: number, sessionSecret: string) {
+  // create express app and enable cross-origin resource sharing, json, and sessions
   const app: express.Express = express();
   app.use(cors());
   app.use(express.json());
+  app.use(
+    session({
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: true,
+    }),
+  );
+
+  await createTablesIfNotExist();
 
   // get request for obtaining list of tracks from database
   app.get("/api/tracks", async (req: Request, res: any) => {
@@ -34,7 +45,7 @@ export function startListener(port: number) {
   });
 
   // get request for audio streaming
-  app.get("/api/audio/:key", async function (req: any, res: any) {
+  app.get("/api/audio/:key", async (req: any, res: any) => {
     try {
       const key: number = req.params.key;
       const music: string = await getPathOfFile(key);
@@ -86,7 +97,7 @@ export function startListener(port: number) {
   });
 
   // post request for downloading youtube audios and storing in database
-  app.post("/api/tracks/uploadUrl", async function (req: any, res: any) {
+  app.post("/api/tracks/uploadUrl", async (req: any, res: any) => {
     try {
       const url = req.body.url;
 
@@ -121,8 +132,6 @@ export function startListener(port: number) {
           track.duration = Math.floor(track.duration);
 
           await addTrackRecords(track);
-
-          console.log("Audio file finished uploading.");
         });
 
       res.status(200).send({ success: "File uploaded successfully!" });

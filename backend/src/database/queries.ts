@@ -3,28 +3,7 @@ import { Database } from "sqlite3";
 const sqlite3 = require("sqlite3").verbose();
 
 // create tables if it doesnt exist
-async function createTableIfNotExist(db: Database, name: string) {
-  return new Promise<void>((resolve, reject) => {
-    const query: string = `
-        CREATE TABLE IF NOT EXISTS ${name} (
-          id INTEGER PRIMARY KEY,
-          title TEXT,
-          duration INTEGER,
-          path TEXT
-        )
-      `;
-
-    db.run(query, function (err: Error) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-// add track records to tracks tables
-async function addTrackRecords(record: any) {
+async function createTablesIfNotExist() {
   return new Promise<void>((resolve, reject) => {
     let db: Database = new sqlite3.Database(
       "./ville.db",
@@ -33,10 +12,72 @@ async function addTrackRecords(record: any) {
           console.error(err.message);
           reject(err);
         } else {
-          await createTableIfNotExist(db, "tracks");
+          const usersQuery: string = `
+            CREATE TABLE IF NOT EXISTS Users (
+              id INTEGER PRIMARY KEY,
+              username TEXT,
+              password_hash TEXT
+            )
+          `;
 
+          const tracksQuery: string = `
+            CREATE TABLE IF NOT EXISTS Tracks (
+              id INTEGER PRIMARY KEY,
+              title TEXT,
+              duration INTEGER,
+              path TEXT
+            )
+          `;
+
+          const userTracksQuery: string = `
+            CREATE TABLE IF NOT EXISTS UserTracks (
+              UserID INTEGER,
+              TrackID INTEGER,
+              FOREIGN KEY (UserID) REFERENCES Users(id),
+              FOREIGN KEY (TrackID) REFERENCES Tracks(id),
+              PRIMARY KEY (UserID, TrackID)
+            )
+          `;
+
+          db.run(usersQuery, function (err: Error) {
+            if (err) {
+              reject(err);
+            } else {
+              db.run(tracksQuery, function (err: Error) {
+                if (err) {
+                  reject(err);
+                } else {
+                  db.run(userTracksQuery, function (err: Error) {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve();
+                      db.close();
+                      console.log("Database is now ready.");
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      },
+    );
+  });
+}
+
+// add track records to tracks tables
+async function addTrackRecords(record: any) {
+  return new Promise<number>((resolve, reject) => {
+    let db: Database = new sqlite3.Database(
+      "./ville.db",
+      async (err: Error) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
           const query: string = `
-            INSERT INTO tracks (title, duration, path)
+            INSERT INTO Tracks (title, duration, path)
             VALUES (?, ?, ?);
           `;
 
@@ -49,9 +90,46 @@ async function addTrackRecords(record: any) {
                 reject(err);
               } else {
                 console.log(
-                  `${record.title} inserted into tracks successfully`,
+                  `${record.title} inserted into Tracks successfully`,
                 );
-                resolve();
+                resolve(this.lastID);
+                db.close();
+              }
+            },
+          );
+        }
+      },
+    );
+  });
+}
+
+// add user records to users tables
+async function addUserRecords(user: any) {
+  return new Promise<number>((resolve, reject) => {
+    let db: Database = new sqlite3.Database(
+      "./ville.db",
+      async (err: Error) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          const query: string = `
+            INSERT INTO Users (username, password_hash)
+            VALUES (?, ?);
+          `;
+
+          db.run(
+            query,
+            [user.username, user.password_hash],
+            function (err: Error) {
+              if (err) {
+                console.error(err.message);
+                reject(err);
+              } else {
+                console.log(
+                  `${user.username} inserted into Tracks successfully`,
+                );
+                resolve(this.lastID);
                 db.close();
               }
             },
@@ -64,7 +142,7 @@ async function addTrackRecords(record: any) {
 
 // get all tracks in the tracks table
 async function getTrackRecords() {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     let tracks: any = [];
     let db: Database = new sqlite3.Database(
       "./ville.db",
@@ -74,9 +152,7 @@ async function getTrackRecords() {
           console.error(err);
           reject(err);
         } else {
-          await createTableIfNotExist(db, "tracks");
-
-          const query: string = `SELECT * FROM tracks`;
+          const query: string = `SELECT * FROM Tracks`;
 
           db.each(
             query,
@@ -111,9 +187,7 @@ async function getNumberOfTracks() {
           console.error(err);
           reject(err);
         } else {
-          await createTableIfNotExist(db, "tracks");
-
-          const query: string = `SELECT COUNT(id) as count FROM tracks`;
+          const query: string = `SELECT COUNT(id) as count FROM Tracks`;
 
           db.get(query, function (err: Error, row: any) {
             if (err) {
@@ -141,9 +215,7 @@ async function getPathOfFile(id: number) {
           console.error(err);
           reject(err);
         } else {
-          await createTableIfNotExist(db, "tracks");
-
-          const query: string = `SELECT path FROM tracks
+          const query: string = `SELECT path FROM Tracks
             WHERE id = (?)`;
 
           db.get(query, [id], function (err: Error, row: any) {
@@ -162,4 +234,11 @@ async function getPathOfFile(id: number) {
   });
 }
 
-export { addTrackRecords, getTrackRecords, getNumberOfTracks, getPathOfFile };
+export {
+  createTablesIfNotExist,
+  addTrackRecords,
+  addUserRecords,
+  getTrackRecords,
+  getNumberOfTracks,
+  getPathOfFile,
+};
