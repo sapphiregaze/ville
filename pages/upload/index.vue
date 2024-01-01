@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen w-screen items-center justify-center p-12">
+  <div class="ml-16 flex h-screen w-screen items-center justify-center p-12">
     <div v-if="!hidden" class="absolute right-0 top-0 m-4 animate-pulse">
       <div
         :class="[

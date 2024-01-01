@@ -1,6 +1,6 @@
 <template>
   <div
-    class="align-center mb-56 flex flex-col bg-gradient-to-br from-emerald-600 to-teal-200 bg-clip-text px-64 py-8 text-transparent"
+    class="align-center mb-56 ml-16 flex flex-col bg-gradient-to-br from-emerald-600 to-teal-200 bg-clip-text px-64 py-8 text-transparent"
   >
     <div class="ml-4 pb-4 pt-8 text-5xl font-extrabold">Library</div>
     <div class="flex p-2 text-2xl font-extrabold">
