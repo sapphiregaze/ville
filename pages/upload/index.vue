@@ -52,10 +52,7 @@
     <div
       class="flex h-full w-full flex-col divide-y-4 divide-dashed divide-teal-400"
     >
-      <form
-        @submit.prevent="uploadUrl"
-        class="flex min-w-96 flex-col justify-center"
-      >
+      <form @submit.prevent="uploadUrl" class="flex flex-col justify-center">
         <div class="px-20 py-6 text-center text-2xl text-emerald-400">
           Upload via YouTube URL:
         </div>
@@ -81,10 +78,7 @@
           </button>
         </div>
       </form>
-      <form
-        @submit.prevent="upload"
-        class="flex min-w-96 flex-col justify-center p-4"
-      >
+      <form @submit.prevent="upload" class="flex flex-col justify-center p-4">
         <div class="px-12 py-6 text-center text-2xl text-emerald-400">
           Upload via audio files:
         </div>
