@@ -143,7 +143,7 @@ export default {
 
       try {
         const response = await fetch(
-          `${this.$config.public.host}/api/tracks/uploadUrl/`,
+          `${this.$config.public.host}/api/tracks/upload/url/`,
           {
             method: "POST",
             headers: {

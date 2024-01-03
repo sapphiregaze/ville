@@ -3,7 +3,7 @@ import { Database } from "sqlite3";
 const sqlite3 = require("sqlite3").verbose();
 
 // create tables if it doesnt exist
-async function createTablesIfNotExist() {
+function createTablesIfNotExist() {
   return new Promise<void>((resolve, reject) => {
     let db: Database = new sqlite3.Database(
       "./ville.db",
