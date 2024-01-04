@@ -126,7 +126,7 @@ export default {
       this.sidebarCollapsed = !this.sidebarCollapsed;
     },
     async logout() {
-      localStorage.setItem("token", "");
+      localStorage.removeItem("token");
     },
   },
 };

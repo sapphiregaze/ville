@@ -57,20 +57,20 @@ router.post("/url", async (req: any, res: any) => {
       req.headers.authorization && req.headers.authorization.split(" ")[1];
     const url = req.body.url;
 
-    jwt.verify(token, secretKey, (err: any, decoded: any) => {
-      if (err) {
-        console.error("Invalid token:", err);
-        return res.status(401).send({ error: "Invalid token" });
-      }
+    try {
+      const decoded: any = jwt.verify(token, secretKey);
       userId = decoded.userId;
-    });
+    } catch (err) {
+      console.error("Invalid token:", err);
+      return res.status(401).send({ error: "Invalid token" });
+    }
 
     const uploadPath: string = "src/database/uploads/";
     fs.mkdirSync(uploadPath, { recursive: true });
 
     // validate user input url
     if (!url || !ytdl.validateURL(url)) {
-      return res.status(400).send("Invalid YouTube URL");
+      return res.status(400).send({ error: "Invalid token" });
     }
 
     const numberOfTracks: number = await getNumberOfTracks();

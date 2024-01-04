@@ -55,6 +55,12 @@
   </div>
 </template>
 
+<script setup>
+definePageMeta({
+  middleware: ["auth"],
+});
+</script>
+
 <script>
 export default {
   data() {
@@ -94,14 +100,9 @@ export default {
 
           this.status = true;
           this.message = "File uploaded successfully!";
-        } else {
-          console.error("Error uploading file: ", error);
-
-          this.status = false;
-          this.message = "Error uploading file.";
         }
       } catch (error) {
-        console.error("Network connection error: ", error);
+        console.error("Error uploading file:", error);
 
         this.status = false;
         this.message = "Error uploading file.";
@@ -129,14 +130,9 @@ export default {
 
           this.status = true;
           this.message = "File uploaded successfully!";
-        } else {
-          console.error("Error uploading file: ", error);
-
-          this.status = false;
-          this.message = "Error uploading file.";
         }
       } catch (error) {
-        console.error("Network connection error: ", error);
+        console.error("Error uploading file:", error);
 
         this.status = false;
         this.message = "Error uploading file.";
