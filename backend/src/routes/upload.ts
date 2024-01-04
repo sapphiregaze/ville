@@ -18,7 +18,7 @@ const secretKey: string = process.env.SECRET_KEY || "DefaultSecretChangeThis";
 // post request for audio file uploading and adding file record to database
 router.post("/", upload.single("audio"), async (req: any, res: any) => {
   try {
-    let userId: number = -1;
+    let userId: number = 0;
     const token: string =
       req.headers.authorization && req.headers.authorization.split(" ")[1];
 
@@ -36,10 +36,9 @@ router.post("/", upload.single("audio"), async (req: any, res: any) => {
 
     const track = {
       title: path.parse(req.file.originalname).name,
-      duration: format.duration || -1,
+      duration: Math.floor(format.duration || -1),
       path: req.file.path,
     };
-    track.duration = Math.floor(track.duration);
 
     await addTrack(userId, track);
 
@@ -47,14 +46,13 @@ router.post("/", upload.single("audio"), async (req: any, res: any) => {
     res.status(200).send({ success: "File uploaded successfully!" });
   } catch (error) {
     console.error("Error uploading file:", error);
-    res.status(500).send({ error: "Internal Server Error" });
   }
 });
 
 // post request for downloading youtube audios and storing in database
 router.post("/url", async (req: any, res: any) => {
   try {
-    let userId: number = -1;
+    let userId: number = 0;
     const token: string =
       req.headers.authorization && req.headers.authorization.split(" ")[1];
     const url = req.body.url;
@@ -92,10 +90,9 @@ router.post("/url", async (req: any, res: any) => {
 
         const track = {
           title: info.videoDetails.title,
-          duration: format.duration || -1,
+          duration: Math.floor(format.duration || -1),
           path: filePath,
         };
-        track.duration = Math.floor(track.duration);
 
         await addTrack(userId, track);
       });
@@ -103,7 +100,6 @@ router.post("/url", async (req: any, res: any) => {
     res.status(200).send({ success: "File uploaded successfully!" });
   } catch (error) {
     console.error("Error downloading file with given URL:", error);
-    res.status(500).send({ error: "Internal Server Error" });
   }
 });
 

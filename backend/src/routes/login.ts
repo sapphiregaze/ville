@@ -29,7 +29,6 @@ router.post("/", (req: any, res: any) => {
     res.status(200).send({ token });
   } catch (error) {
     console.error("Error authenticating user:", error);
-    res.status(500).send({ error: "Internal Server Error" });
   }
 });
 

@@ -54,7 +54,6 @@ router.get("/:key", async (req: any, res: any) => {
     readStream.pipe(res);
   } catch (error) {
     console.error("Error streaming audio file:", error);
-    res.status(500).send({ error: "Internal Server Error" });
   }
 });
 

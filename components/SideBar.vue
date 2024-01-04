@@ -58,12 +58,19 @@
           </NuxtLink>
           <NuxtLink to="/settings">
             <div
-              class="mt-72 rounded-xl p-2 shadow-lg hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+              class="mt-56 rounded-xl p-2 shadow-lg hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
             >
               <Icon name="healthicons:ui-settings" color="#059669" size="24" />
               Settings
             </div>
           </NuxtLink>
+          <button
+            @click="logout"
+            class="m-2 rounded-xl px-4 py-2 shadow-lg hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
+          >
+            <Icon name="humbleicons:logout" color="#059669" size="24" />
+            Logout
+          </button>
         </div>
       </div>
 
@@ -117,6 +124,9 @@ export default {
   methods: {
     toggleSidebar() {
       this.sidebarCollapsed = !this.sidebarCollapsed;
+    },
+    async logout() {
+      localStorage.setItem("token", "");
     },
   },
 };
