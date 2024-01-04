@@ -70,6 +70,8 @@ export default {
       this.hidden = state;
     },
     async upload() {
+      const token = localStorage.getItem("token");
+
       const formData = new FormData();
       const fileInput = this.$refs.dropzone.$refs.fileInput;
 
@@ -80,6 +82,9 @@ export default {
           `${this.$config.public.host}/api/tracks/upload/`,
           {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
             body: formData,
           },
         );
@@ -104,6 +109,7 @@ export default {
     },
     async uploadUrl() {
       const url = this.youtubeUrl;
+      const token = localStorage.getItem("token");
 
       try {
         const response = await fetch(
@@ -112,6 +118,7 @@ export default {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ url }),
           },

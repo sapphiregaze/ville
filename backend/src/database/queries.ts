@@ -15,6 +15,7 @@ function createTablesIfNotExist() {
           const usersQuery: string = `
             CREATE TABLE IF NOT EXISTS Users (
               id INTEGER PRIMARY KEY,
+              email TEXT,
               username TEXT,
               password_hash TEXT
             )
@@ -114,13 +115,13 @@ async function addUserRecords(user: any) {
           reject(err);
         } else {
           const query: string = `
-            INSERT INTO Users (username, password_hash)
-            VALUES (?, ?);
+            INSERT INTO Users (email, username, password_hash)
+            VALUES (?, ?, ?);
           `;
 
           db.run(
             query,
-            [user.username, user.password_hash],
+            [user.email, user.username, user.password_hash],
             function (err: Error) {
               if (err) {
                 console.error(err.message);
@@ -140,8 +141,83 @@ async function addUserRecords(user: any) {
   });
 }
 
+// add user id corresponded with track id
+async function addUserTrackRecords(userId: number, trackId: number) {
+  return new Promise<void>((resolve, reject) => {
+    let db: Database = new sqlite3.Database(
+      "./ville.db",
+      async (err: Error) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          const query: string = `
+            INSERT INTO UserTracks (UserID, TrackID)
+            VALUES (?, ?);
+          `;
+
+          db.run(query, [userId, trackId], function (err: Error) {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+            } else {
+              console.log(
+                `Track ${trackId} with user ${userId} inserted into UserTracks successfully`,
+              );
+              resolve();
+              db.close();
+            }
+          });
+        }
+      },
+    );
+  });
+}
+
+// get tracks corresponding with user id in the tracks table
+async function getUserTrackRecords(userId: number) {
+  return new Promise<void>((resolve, reject) => {
+    let tracks: any = [];
+    let db: Database = new sqlite3.Database(
+      "./ville.db",
+      sqlite3.OPEN_READONLY,
+      async (err: Error) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          const query: string = `
+            SELECT Tracks.*
+            FROM Tracks
+            JOIN UserTracks ON Tracks.id = UserTracks.TrackID
+            WHERE UserTracks.UserID = (?);
+          `;
+
+          db.each(
+            query,
+            [userId],
+            (err: Error, row: any) => {
+              if (err) {
+                reject(err);
+              }
+              tracks.push(row);
+            },
+            (err: Error) => {
+              if (err) {
+                reject(err);
+              }
+              resolve(tracks);
+              db.close();
+            },
+          );
+        }
+      },
+    );
+  });
+}
+
 // get all tracks in the tracks table
-async function getTrackRecords() {
+async function getAllTrackRecords() {
   return new Promise<void>((resolve, reject) => {
     let tracks: any = [];
     let db: Database = new sqlite3.Database(
@@ -238,7 +314,9 @@ export {
   createTablesIfNotExist,
   addTrackRecords,
   addUserRecords,
-  getTrackRecords,
+  addUserTrackRecords,
+  getUserTrackRecords,
+  getAllTrackRecords,
   getNumberOfTracks,
   getPathOfFile,
 };

@@ -14,16 +14,16 @@
       />
     </div>
     <div
-      @mouseover="togglePlaying(true), setCurrentId(track.id)"
+      @mouseover="togglePlaying(true), setCurrentId(index)"
       @mouseout="togglePlaying(false), setCurrentId(null)"
-      v-for="track in tracks"
-      :key="track.id"
+      v-for="(track, index) in tracks"
+      :key="index"
       class="flex rounded-lg p-2 hover:bg-[#11101d] hover:text-slate-300"
     >
       <div class="flex">
         <button
-          v-if="playing && selectedId === track.id"
-          @click="setAudioId(track.id)"
+          v-if="playing && selectedId === index"
+          @click="setAudioId(index)"
         >
           <Icon
             name="material-symbols:play-arrow-rounded"
@@ -34,7 +34,7 @@
         </button>
 
         <div v-else class="w-20 pr-12 text-right">
-          {{ track.id }}
+          {{ index + 1 }}
         </div>
         <div class="w-96 pr-32 text-left">{{ track.title }}</div>
         <div class="w-24 text-right">{{ track.duration }}</div>
@@ -51,11 +51,17 @@ export default {
       tracks: [],
       selectedId: null,
       playing: false,
-      audioId: 0,
+      audioId: -1,
     };
   },
   mounted() {
-    fetch(`${this.$config.public.host}/api/tracks/`)
+    const token = localStorage.getItem("token");
+
+    fetch(`${this.$config.public.host}/api/tracks/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => response.json())
       .then((tracks) => {
         tracks.forEach((track) => {

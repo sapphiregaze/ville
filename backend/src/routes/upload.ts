@@ -2,17 +2,34 @@ import fs from "fs";
 import path from "path";
 import express from "express";
 import ytdl from "ytdl-core";
+import jwt from "jsonwebtoken";
 import ffmpeg from "fluent-ffmpeg";
 import * as mm from "music-metadata";
 
 import { upload } from "../utils/upload.conf";
-import { addTrackRecords, getNumberOfTracks } from "../database/queries";
+import { getNumberOfTracks } from "../database/queries";
+import { addTrack } from "../utils/records";
 
 const router: express.Router = express.Router();
+
+require("dotenv").config();
+const secretKey: string = process.env.SECRET_KEY || "DefaultSecretChangeThis";
 
 // post request for audio file uploading and adding file record to database
 router.post("/", upload.single("audio"), async (req: any, res: any) => {
   try {
+    let userId: number = -1;
+    const token: string =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    jwt.verify(token, secretKey, (err: any, decoded: any) => {
+      if (err) {
+        console.error("Invalid token:", err);
+        return res.status(401).send({ error: "Invalid token" });
+      }
+      userId = decoded.userId;
+    });
+
     const { format } = await mm.parseFile(req.file.path, {
       duration: true,
     });
@@ -24,7 +41,7 @@ router.post("/", upload.single("audio"), async (req: any, res: any) => {
     };
     track.duration = Math.floor(track.duration);
 
-    await addTrackRecords(track);
+    await addTrack(userId, track);
 
     console.log("File uploaded:", req.file.originalname, "to", req.file.path);
     res.status(200).send({ success: "File uploaded successfully!" });
@@ -37,7 +54,18 @@ router.post("/", upload.single("audio"), async (req: any, res: any) => {
 // post request for downloading youtube audios and storing in database
 router.post("/url", async (req: any, res: any) => {
   try {
+    let userId: number = -1;
+    const token: string =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
     const url = req.body.url;
+
+    jwt.verify(token, secretKey, (err: any, decoded: any) => {
+      if (err) {
+        console.error("Invalid token:", err);
+        return res.status(401).send({ error: "Invalid token" });
+      }
+      userId = decoded.userId;
+    });
 
     const uploadPath: string = "src/database/uploads/";
     fs.mkdirSync(uploadPath, { recursive: true });
@@ -69,7 +97,7 @@ router.post("/url", async (req: any, res: any) => {
         };
         track.duration = Math.floor(track.duration);
 
-        await addTrackRecords(track);
+        await addTrack(userId, track);
       });
 
     res.status(200).send({ success: "File uploaded successfully!" });

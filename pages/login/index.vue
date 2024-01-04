@@ -4,11 +4,13 @@
       class="rounded-lg border border-[#131516] bg-[#11101d] bg-opacity-50 bg-clip-padding p-8 backdrop-blur-md backdrop-filter"
     >
       <form
+        @submit.prevent="login"
         class="flex flex-col items-center justify-center bg-gradient-to-tl from-emerald-100 to-teal-400 bg-clip-text text-transparent"
       >
         <div class="text-2xl font-semibold">Login</div>
         <div class="relative mx-4 mt-4 h-10 w-full min-w-24">
           <input
+            v-model="username"
             placeholder="Username"
             class="peer h-full w-full rounded-sm bg-transparent px-3 py-2.5 text-sm font-normal text-teal-200 outline outline-0 transition-all placeholder:opacity-0 focus:outline-0 focus:placeholder:opacity-100"
           />
@@ -20,6 +22,7 @@
         </div>
         <div class="relative mx-4 mt-4 h-10 w-full min-w-24">
           <input
+            v-model="password"
             type="password"
             placeholder="Password"
             class="peer h-full w-full rounded-sm bg-transparent px-3 py-2.5 text-sm font-normal text-teal-200 outline outline-0 transition-all placeholder:opacity-0 focus:outline-0 focus:placeholder:opacity-100"
@@ -51,4 +54,41 @@
 definePageMeta({
   layout: "clean",
 });
+</script>
+
+<script>
+export default {
+  data() {
+    return {
+      username: "",
+      password: "",
+    };
+  },
+  methods: {
+    async login() {
+      const user = { username: this.username, password: this.password };
+
+      try {
+        const response = await fetch(`${this.$config.public.host}/api/login/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("token", data.token);
+
+          console.log("Successfully logged in!");
+
+          this.$router.push("/library");
+        }
+      } catch (error) {
+        console.error("Network connection error: ", error);
+      }
+    },
+  },
+};
 </script>

@@ -106,7 +106,7 @@ export default {
   data() {
     return {
       audioSrc: null,
-      audioId: 0,
+      audioId: -1,
       audioName: "",
       audioDuration: "0:00",
       playing: false,
@@ -139,14 +139,15 @@ export default {
       this.playing = !this.playing;
     },
     changeAudioId(amount) {
-      // check for edge cases to ensure id stays between 1 and tracks.length
-      if (this.audioId <= 1 && amount < 0) {
-        this.audioId = this.tracks.length + (0 - amount);
+      let newAudioId = this.audioId + amount;
+
+      if (newAudioId < 0) {
+        newAudioId = this.tracks.length - 1;
+      } else if (newAudioId >= this.tracks.length) {
+        newAudioId = 0;
       }
-      if (this.audioId >= this.tracks.length && amount > 0) {
-        this.audioId = this.audioId % this.tracks.length;
-      }
-      this.audioId += amount;
+
+      this.audioId = newAudioId;
     },
     parseDuration(time) {
       const seconds =
@@ -161,9 +162,11 @@ export default {
     },
     audioId: function () {
       // reset data corresponding to the audio id
-      this.audioSrc = `${this.$config.public.host}/api/audio/${this.audioId}`;
-      this.audioName = this.tracks[this.audioId - 1].title;
-      this.audioDuration = this.tracks[this.audioId - 1].duration;
+      this.audioSrc = `${this.$config.public.host}/api/audio/${
+        this.tracks[this.audioId].id
+      }`;
+      this.audioName = this.tracks[this.audioId].title;
+      this.audioDuration = this.tracks[this.audioId].duration;
 
       this.playing = false;
       this.seekValue = 0;
