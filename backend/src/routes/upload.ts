@@ -6,6 +6,9 @@ import jwt from "jsonwebtoken";
 import ffmpeg from "fluent-ffmpeg";
 import * as mm from "music-metadata";
 
+const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
+ffmpeg.setFfmpegPath(ffmpegPath);
+
 import { upload } from "../utils/upload.conf";
 import { getNumberOfTracks } from "../database/queries";
 import { addTrack } from "../utils/records";

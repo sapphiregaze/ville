@@ -44,13 +44,13 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 definePageMeta({
   middleware: ["auth"],
 });
 </script>
 
-<script lang="ts">
+<script>
 export default {
   data() {
     return {
