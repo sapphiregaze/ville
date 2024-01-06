@@ -7,7 +7,7 @@ router.use(express.json());
 require("dotenv").config();
 const secretKey: string = process.env.SECRET_KEY || "DefaultSecretChangeThis";
 
-router.post("/", (req: any, res: any) => {
+router.post("/login", (req: any, res: any) => {
   try {
     const { username, password } = req.body;
 
@@ -26,7 +26,7 @@ router.post("/", (req: any, res: any) => {
 
     const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: "3d" });
 
-    res.status(200).send({ token });
+    res.status(200).send({ token: token });
   } catch (error) {
     console.error("Error authenticating user:", error);
   }

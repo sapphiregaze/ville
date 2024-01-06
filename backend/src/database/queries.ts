@@ -54,7 +54,6 @@ function createTablesIfNotExist() {
                     } else {
                       resolve();
                       db.close();
-                      console.log("Database is now ready.");
                     }
                   });
                 }

@@ -4,7 +4,7 @@ import express from "express";
 import { createTablesIfNotExist } from "./database/queries";
 
 import audioRoutes from "./routes/audio";
-import loginRoutes from "./routes/login";
+import userRoutes from "./routes/user";
 import tracksRoutes from "./routes/tracks";
 import uploadRoutes from "./routes/upload";
 
@@ -17,12 +17,19 @@ const app: express.Express = express();
 app.use(express.json());
 app.use(cors({ methods: ["GET", "POST"] }));
 
-createTablesIfNotExist();
-
 app.use("/api/audio", audioRoutes);
-app.use("/api/login", loginRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/tracks", tracksRoutes);
 app.use("/api/tracks/upload", uploadRoutes);
+
+createTablesIfNotExist()
+  .then(() => console.log("Database is now ready."))
+  .catch((error) => console.error(error));
+
+// test connection to backend
+app.get("/", (req: any, res: any) => {
+  res.status(200).json({ message: "ville is up and listening." });
+});
 
 // start the express backend listener
 app.listen(port, () => {

@@ -69,13 +69,16 @@ export default {
       const user = { username: this.username, password: this.password };
 
       try {
-        const response = await fetch(`${this.$config.public.host}/api/login/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `${this.$config.public.host}/api/user/login/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
           },
-          body: JSON.stringify(user),
-        });
+        );
 
         if (response.ok) {
           const data = await response.json();
