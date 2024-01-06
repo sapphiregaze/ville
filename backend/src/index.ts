@@ -11,18 +11,11 @@ import uploadRoutes from "./routes/upload";
 require("dotenv").config();
 
 const port: number = parseInt(process.env.PORT || "8080", 10);
-const frontendHost: string =
-  process.env.FRONTEND_HOST || "http://localhost:3000";
 
 // create express app and enable json, and cross-origin resource sharing
 const app: express.Express = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: frontendHost,
-    methods: ["GET", "POST"],
-  }),
-);
+app.use(cors({ methods: ["GET", "POST"] }));
 
 createTablesIfNotExist();
 

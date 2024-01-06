@@ -73,7 +73,7 @@ router.post("/url", async (req: any, res: any) => {
 
     // validate user input url
     if (!url || !ytdl.validateURL(url)) {
-      return res.status(400).send({ error: "Invalid token" });
+      return res.status(400).send({ error: "Invalid URL" });
     }
 
     const numberOfTracks: number = await getNumberOfTracks();
