@@ -11,7 +11,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 import { upload } from "../utils/upload.conf";
 import { getNumberOfTracks } from "../database/queries";
-import { addTrack } from "../utils/records.util";
+import { addTrack } from "../utils/tracks.util";
 
 const router: express.Router = express.Router();
 

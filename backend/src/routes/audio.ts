@@ -13,9 +13,9 @@ router.get("/:key", async (req: any, res: any) => {
     const music: string = await getPathOfFile(key);
     const contentType: string | false = mime.lookup(music);
 
-    const stat = fs.statSync(music);
-    const range = req.headers.range;
-    let readStream;
+    const stat: fs.Stats = fs.statSync(music);
+    const range: any = req.headers.range;
+    let readStream: any;
 
     if (range !== undefined) {
       const parts: string = range.replace(/bytes=/, "").split("-");
