@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import multer from "multer";
 
-import { getNumberOfTracks } from "./queries";
+import { getNumberOfTracks } from "../database/queries";
 
 const filter: any = (
   req: Request,

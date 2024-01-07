@@ -102,15 +102,13 @@ export default {
   props: {
     tracks: Array,
     id: Number,
-    name: String,
-    duration: String,
   },
   data() {
     return {
-      audioSrc: `${this.$config.public.host}/api/audio/${this.id}`,
-      audioId: this.id,
-      audioName: this.name,
-      audioDuration: this.duration,
+      audioSrc: null,
+      audioId: -1,
+      audioName: "",
+      audioDuration: "0:00",
       playing: false,
       currentTime: 0,
       seekValue: 0,
@@ -141,19 +139,15 @@ export default {
       this.playing = !this.playing;
     },
     changeAudioId(amount) {
-      // check for edge cases to ensure id stays between 1 and tracks.length
-      if (this.audioId <= 1 && amount < 0) {
-        this.audioId = this.tracks.length + (0 - amount);
-      }
-      if (this.audioId >= this.tracks.length && amount > 0) {
-        this.audioId = this.audioId % this.tracks.length;
-      }
-      this.audioId += amount;
+      let newAudioId = this.audioId + amount;
 
-      // reset data corresponding to the audio id
-      this.audioSrc = `${this.$config.public.host}/api/audio/${this.audioId}`;
-      this.audioName = this.tracks[this.audioId - 1].title;
-      this.audioDuration = this.tracks[this.audioId - 1].duration;
+      if (newAudioId < 0) {
+        newAudioId = this.tracks.length - 1;
+      } else if (newAudioId >= this.tracks.length) {
+        newAudioId = 0;
+      }
+
+      this.audioId = newAudioId;
     },
     parseDuration(time) {
       const seconds =
@@ -164,20 +158,16 @@ export default {
   },
   watch: {
     id: function (newId) {
-      this.audioSrc = `${this.$config.public.host}/api/audio/${newId}`;
       this.audioId = newId;
-      this.playing = false;
-      this.seekValue = 0;
-      this.currentTime = 0;
-      this.$refs.audioPlayer.currentTime = 0;
-    },
-    name: function (newName) {
-      this.audioName = newName;
-    },
-    duration: function (newDuration) {
-      this.audioDuration = newDuration;
     },
     audioId: function () {
+      // reset data corresponding to the audio id
+      this.audioSrc = `${this.$config.public.host}/api/audio/${
+        this.tracks[this.audioId].id
+      }`;
+      this.audioName = this.tracks[this.audioId].title;
+      this.audioDuration = this.tracks[this.audioId].duration;
+
       this.playing = false;
       this.seekValue = 0;
       this.currentTime = 0;
