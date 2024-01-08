@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import validator from "validator";
 
 import {
@@ -8,6 +9,9 @@ import {
   getUser,
 } from "../database/queries";
 
+require("dotenv").config();
+const secretKey: string = process.env.SECRET_KEY || "DefaultSecretChangeThis";
+
 async function login(request: any) {
   const { username, password } = request.body;
 
@@ -16,17 +20,24 @@ async function login(request: any) {
     throw "Cannot leave field empty.";
   }
 
+  // get user corresponding to username
   const user: any = await getUser(username);
   if (!user) {
     throw "Invalid username.";
   }
 
+  // check if password hashes match
   const match: boolean = await bcrypt.compare(password, user.password_hash);
   if (!match) {
     throw "Incorrect password.";
   }
 
-  return user;
+  // return signed token if no error was thrown
+  const token: string = jwt.sign({ userId: user.id }, secretKey, {
+    expiresIn: "3d",
+  });
+
+  return token;
 }
 
 async function register(request: any) {
@@ -66,4 +77,25 @@ async function register(request: any) {
   return await login(request);
 }
 
-export { login, register };
+function validateUser(request: any) {
+  let userId: number = 0;
+  const token: string =
+    request.headers.authorization &&
+    request.headers.authorization.split(" ")[1];
+
+  // verify token with secret key to get user id
+  jwt.verify(token, secretKey, (err: any, decoded: any) => {
+    if (err) {
+      throw "Invalid jwt token.";
+    }
+    userId = decoded.userId;
+  });
+
+  if (!userId) {
+    throw "Invalid user.";
+  }
+
+  return userId;
+}
+
+export { login, register, validateUser };

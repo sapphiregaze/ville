@@ -125,8 +125,9 @@ export default {
     toggleSidebar() {
       this.sidebarCollapsed = !this.sidebarCollapsed;
     },
-    async logout() {
+    logout() {
       localStorage.removeItem("token");
+      this.$router.push("/");
     },
   },
 };

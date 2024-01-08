@@ -9,7 +9,6 @@ import tracksRoutes from "./routes/tracks";
 import uploadRoutes from "./routes/upload";
 
 require("dotenv").config();
-
 const port: number = parseInt(process.env.PORT || "8080", 10);
 
 // create express app and enable json, and cross-origin resource sharing
@@ -20,7 +19,7 @@ app.use(cors({ methods: ["GET", "POST"] }));
 app.use("/api/audio", audioRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/tracks", tracksRoutes);
-app.use("/api/tracks/upload", uploadRoutes);
+app.use("/api/upload", uploadRoutes);
 
 createTablesIfNotExist()
   .then(() => console.log("Database is now ready."))

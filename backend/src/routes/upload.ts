@@ -2,40 +2,25 @@ import fs from "fs";
 import path from "path";
 import express from "express";
 import ytdl from "ytdl-core";
-import jwt from "jsonwebtoken";
 import ffmpeg from "fluent-ffmpeg";
 import * as mm from "music-metadata";
 
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-import { upload } from "../utils/upload.conf";
-import { getNumberOfTracks } from "../database/queries";
+import { upload } from "../utils/upload.util";
 import { addTrack } from "../utils/tracks.util";
+import { getNumberOfTracks } from "../database/queries";
+import { validateUser } from "../utils/user.util";
 
 const router: express.Router = express.Router();
-
-require("dotenv").config();
-const secretKey: string = process.env.SECRET_KEY || "DefaultSecretChangeThis";
 
 // post request for audio file uploading and adding file record to database
 router.post("/", upload.single("audio"), async (req: any, res: any) => {
   try {
-    let userId: number = 0;
-    const token: string =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
+    const userId: number = validateUser(req);
 
-    jwt.verify(token, secretKey, (err: any, decoded: any) => {
-      if (err) {
-        console.error("Invalid token:", err);
-        return res.status(401).send({ error: "Invalid token" });
-      }
-      userId = decoded.userId;
-    });
-
-    const { format } = await mm.parseFile(req.file.path, {
-      duration: true,
-    });
+    const { format } = await mm.parseFile(req.file.path, { duration: true });
 
     const track = {
       title: path.parse(req.file.originalname).name,
@@ -45,35 +30,26 @@ router.post("/", upload.single("audio"), async (req: any, res: any) => {
 
     await addTrack(userId, track);
 
-    console.log("File uploaded:", req.file.originalname, "to", req.file.path);
     res.status(200).send({ success: "File uploaded successfully!" });
   } catch (error) {
     console.error("Error uploading file:", error);
+    res.status(401).send({ error: error });
   }
 });
 
 // post request for downloading youtube audios and storing in database
 router.post("/url", async (req: any, res: any) => {
   try {
-    let userId: number = 0;
-    const token: string =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
     const url = req.body.url;
-
-    try {
-      const decoded: any = jwt.verify(token, secretKey);
-      userId = decoded.userId;
-    } catch (err) {
-      console.error("Invalid token:", err);
-      return res.status(401).send({ error: "Invalid token" });
-    }
-
     const uploadPath: string = "src/database/uploads/";
+
+    const userId: number = validateUser(req);
+
     fs.mkdirSync(uploadPath, { recursive: true });
 
     // validate user input url
     if (!url || !ytdl.validateURL(url)) {
-      return res.status(400).send({ error: "Invalid URL" });
+      throw "Invalid URL";
     }
 
     const numberOfTracks: number = await getNumberOfTracks();
@@ -87,9 +63,7 @@ router.post("/url", async (req: any, res: any) => {
         const info = await ytdl.getInfo(url);
         const filePath: string = uploadPath + `${numberOfTracks + 1}.mp3`;
 
-        const { format } = await mm.parseFile(filePath, {
-          duration: true,
-        });
+        const { format } = await mm.parseFile(filePath, { duration: true });
 
         const track = {
           title: info.videoDetails.title,
@@ -103,6 +77,7 @@ router.post("/url", async (req: any, res: any) => {
     res.status(200).send({ success: "File uploaded successfully!" });
   } catch (error) {
     console.error("Error downloading file with given URL:", error);
+    res.status(401).send({ error: error });
   }
 });
 
