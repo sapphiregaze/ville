@@ -1,3 +1,3 @@
 # ville
 
-Full-stack music streaming application with custom uploading options created with Nuxt.js and Express.js 🎶
+https://github.com/SapphireGaze/ville/assets/48490756/cf02497b-c82e-4d9c-adc2-7abc02332cd1
