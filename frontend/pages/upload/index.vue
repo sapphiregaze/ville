@@ -100,6 +100,9 @@ export default {
 
           this.status = true;
           this.message = "File uploaded successfully!";
+        } else {
+          this.status = false;
+          this.message = "Error uploading file.";
         }
       } catch (error) {
         console.error("Error uploading file:", error);

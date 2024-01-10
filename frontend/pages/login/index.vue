@@ -1,5 +1,11 @@
 <template>
   <div class="flex h-screen w-screen items-center justify-center">
+    <Notification
+      :hidden="hidden"
+      :status="status"
+      :message="message"
+      @hidden="setHidden(true)"
+    />
     <div
       class="rounded-lg border border-[#131516] bg-[#11101d] bg-opacity-50 bg-clip-padding p-8 backdrop-blur-md backdrop-filter"
     >
@@ -34,6 +40,7 @@
           </label>
         </div>
         <button
+          @click="setHidden(false)"
           type="submit"
           class="mx-8 my-4 rounded-xl px-6 py-2 hover:animate-pulse hover:bg-[#131516] hover:font-extrabold hover:text-emerald-400 hover:outline-double"
         >
@@ -62,9 +69,15 @@ export default {
     return {
       username: "",
       password: "",
+      status: null,
+      hidden: true,
+      message: "",
     };
   },
   methods: {
+    setHidden(state) {
+      this.hidden = state;
+    },
     async login() {
       const user = { username: this.username, password: this.password };
 
@@ -80,16 +93,24 @@ export default {
           },
         );
 
+        const data = await response.json();
+
         if (response.ok) {
-          const data = await response.json();
+          console.log("Successfully logged in!");
           localStorage.setItem("token", data.token);
 
-          console.log("Successfully logged in!");
+          this.status = true;
+          this.message = "Login Successful!";
 
           this.$router.push("/library");
+        } else {
+          this.status = false;
+          this.message = data.error;
         }
       } catch (error) {
         console.error("Network connection error: ", error);
+        this.status = false;
+        this.message = "Network connection error.";
       }
     },
   },
