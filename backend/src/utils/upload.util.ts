@@ -2,12 +2,12 @@ import fs from "fs";
 import path from "path";
 import multer from "multer";
 
-import { getNumberOfTracks } from "../database/queries";
+import { Track } from "../database/models/track.model";
 
 const filter: any = (
   req: Request,
   file: Express.Multer.File,
-  cb: (error: Error | null, acceptFile: boolean) => void,
+  cb: (error: Error | null, acceptFile: boolean) => void
 ) => {
   // filter out non-audio files using mimetype
   if (file.mimetype.startsWith("audio/")) {
@@ -28,7 +28,8 @@ const storage: multer.StorageEngine = multer.diskStorage({
   filename: async function (req: any, file: any, cb: any) {
     // obtain amount of record and use it as filename
     try {
-      const numberOfTracks: number = await getNumberOfTracks();
+      const numberOfTracks: number = await Track.count();
+
       cb(null, String(numberOfTracks + 1) + path.extname(file.originalname));
     } catch (error) {
       console.error("Error obtaining records:", error);

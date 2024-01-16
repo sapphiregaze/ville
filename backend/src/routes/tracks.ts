@@ -1,7 +1,8 @@
 import express from "express";
 
-import { getUserTrackRecords } from "../database/queries";
 import { validateUser } from "../utils/user.util";
+
+import { getUserTrackRecords } from "../database/models/userTrack.model";
 
 const router: express.Router = express.Router();
 

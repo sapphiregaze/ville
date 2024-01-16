@@ -5,13 +5,14 @@ import ytdl from "ytdl-core";
 import ffmpeg from "fluent-ffmpeg";
 import * as mm from "music-metadata";
 
+import { upload } from "../utils/upload.util";
+import { validateUser } from "../utils/user.util";
+
+import { Track } from "../database/models/track.model";
+import { addUserTrackRecord } from "../database/models/userTrack.model";
+
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 ffmpeg.setFfmpegPath(ffmpegPath);
-
-import { upload } from "../utils/upload.util";
-import { addTrack } from "../utils/tracks.util";
-import { getNumberOfTracks } from "../database/queries";
-import { validateUser } from "../utils/user.util";
 
 const router: express.Router = express.Router();
 
@@ -28,7 +29,7 @@ router.post("/", upload.single("audio"), async (req: any, res: any) => {
       path: req.file.path,
     };
 
-    await addTrack(userId, track);
+    await addUserTrackRecord(userId, track);
 
     res.status(200).send({ success: "File uploaded successfully!" });
   } catch (error) {
@@ -52,7 +53,7 @@ router.post("/url", async (req: any, res: any) => {
       throw "Invalid URL";
     }
 
-    const numberOfTracks: number = await getNumberOfTracks();
+    const numberOfTracks: number = await Track.count();
 
     // get youtube stream with ytdl-core and convert to mp3 using ffmpeg
     const stream: any = ytdl(url, { quality: "highestaudio" });
@@ -71,7 +72,7 @@ router.post("/url", async (req: any, res: any) => {
           path: filePath,
         };
 
-        await addTrack(userId, track);
+        await addUserTrackRecord(userId, track);
       });
 
     res.status(200).send({ success: "File uploaded successfully!" });

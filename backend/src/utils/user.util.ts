@@ -2,12 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 
-import {
-  addUserRecords,
-  emailExists,
-  usernameExists,
-  getUser,
-} from "../database/queries";
+import { User, addUserRecord } from "../database/models/user.model";
 
 require("dotenv").config();
 const secretKey: string = process.env.SECRET_KEY || "DefaultSecretChangeThis";
@@ -21,7 +16,10 @@ async function login(request: any) {
   }
 
   // get user corresponding to username
-  const user: any = await getUser(username);
+  const user: any = await User.findOne({
+    where: { username: username },
+  });
+
   if (!user) {
     throw "Invalid username.";
   }
@@ -56,10 +54,19 @@ async function register(request: any) {
   validator.normalizeEmail(email);
 
   // check if username or email is in use
-  if (await usernameExists(username)) {
+  if (
+    await User.findOne({
+      where: { username: username },
+    })
+  ) {
     throw "Username already in use.";
   }
-  if (await emailExists(email)) {
+
+  if (
+    await User.findOne({
+      where: { email: email },
+    })
+  ) {
     throw "Email already in use.";
   }
 
@@ -67,12 +74,7 @@ async function register(request: any) {
   const passwordHash: string = await bcrypt.hash(password, 10);
 
   // add user to user records
-  const user: any = {
-    email: email,
-    username: username,
-    password_hash: passwordHash,
-  };
-  await addUserRecords(user);
+  await addUserRecord(email, username, passwordHash);
 
   return await login(request);
 }

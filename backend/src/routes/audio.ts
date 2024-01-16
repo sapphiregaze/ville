@@ -2,7 +2,7 @@ import fs from "fs";
 import mime from "mime-types";
 import express from "express";
 
-import { getPathOfFile } from "../database/queries";
+import { Track } from "../database/models/track.model";
 
 const router: express.Router = express.Router();
 
@@ -10,7 +10,12 @@ const router: express.Router = express.Router();
 router.get("/:key", async (req: any, res: any) => {
   try {
     const key: number = req.params.key;
-    const music: string = await getPathOfFile(key);
+    const track: any = await Track.findOne({
+      attributes: ["path"],
+      where: { id: key },
+    });
+
+    const music: string = track.path;
     const contentType: string | false = mime.lookup(music);
 
     const stat: fs.Stats = fs.statSync(music);
